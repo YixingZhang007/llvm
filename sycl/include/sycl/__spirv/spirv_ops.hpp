@@ -166,7 +166,7 @@ template <typename T, typename Tp, std::size_t R, std::size_t C,
           __spv::MatrixLayout L = __spv::MatrixLayout::RowMajor,
           __spv::Scope::Flag S = __spv::Scope::Flag::Subgroup>
 extern __DPCPP_SYCL_EXTERNAL
-    __spv::__spirv_JointMatrixINTEL<Tp, R, C, L, S, U> *
+    __spv::__spirv_CooperativeMatrixKHR<Tp, S, R, C, U> *
     __spirv_CooperativeMatrixLoadOffsetINTEL(T *Ptr, int32_t RowIndex,
                                              int32_t ColIndex,
                                              __spv::MatrixLayout Layout = L,
@@ -179,7 +179,7 @@ template <typename T, typename Tp, std::size_t R, std::size_t C,
           __spv::Scope::Flag S = __spv::Scope::Flag::Subgroup>
 extern __DPCPP_SYCL_EXTERNAL void __spirv_CooperativeMatrixStoreOffsetINTEL(
     T *Ptr, int32_t RowIndex, int32_t ColIndex,
-    __spv::__spirv_JointMatrixINTEL<Tp, R, C, L, S, U> *Object,
+    __spv::__spirv_CooperativeMatrixKHR<Tp, S, R, C, U> *Object,
     __spv::MatrixLayout Layout = L, std::size_t Stride = 0, int MemOperand = 0);
 
 #ifndef __SPIRV_BUILTIN_DECLARATIONS__

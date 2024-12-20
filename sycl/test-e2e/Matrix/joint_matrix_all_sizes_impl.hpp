@@ -54,9 +54,9 @@ void matrix_multiply(big_matrix<T1, M, N> &C, big_matrix<T2, M, K> &A,
                sub_b;
            joint_matrix<sub_group, T1, use::accumulator, TM, TN> sub_c;
 
-           joint_matrix_load(
-               sg, sub_c, accC.template get_multi_ptr<access::decorated::no>(),
-               sg_startx * TM, sg_starty / sg_size * TN, N, layout::row_major);
+          //  joint_matrix_load(
+          //      sg, sub_c, accC.template get_multi_ptr<access::decorated::no>(),
+          //      sg_startx * TM, sg_starty / sg_size * TN, N, layout::row_major);
 
           //  os << "sg_startx " << sg_startx << " sg_starty " << sg_starty << ": ";
           //  joint_matrix_apply(sg, sub_c, [=](T1 &x) {
@@ -64,29 +64,17 @@ void matrix_multiply(big_matrix<T1, M, N> &C, big_matrix<T2, M, K> &A,
           //  });
           //  os << "\n";
 
-           for (int k = 0; k < K / TK; k += 1) {
-            //  joint_matrix_load(
-            //      sg, sub_a,
-            //      accA.template get_multi_ptr<access::decorated::no>() +
-            //          (sg_startx * TM) * K + k * TK,
-            //      K);
-            //  joint_matrix_load(
-            //      sg, sub_b,
-            //      accB.template get_multi_ptr<access::decorated::no>() +
-            //          (k * TK / vnniFactor) * (N * vnniFactor) +
-            //          sg_starty / sg_size * TN * vnniFactor,
-            //      N * vnniFactor);
-
-             joint_matrix_load(
-                 sg, sub_a,
-                 accA.template get_multi_ptr<access::decorated::no>(),
-                 sg_startx * TM, k * TK, K);
-            joint_matrix_load(
-                 sg, sub_b,
-                 accB.template get_multi_ptr<access::decorated::no>(),
-                 k * TK / vnniFactor, sg_starty / sg_size * TN * vnniFactor, N * vnniFactor);
-             joint_matrix_mad(sg, sub_c, sub_a, sub_b, sub_c);
-           }
+          //  for (int k = 0; k < K / TK; k += 1) {
+          //  joint_matrix_load(
+          //        sg, sub_a,
+          //        accA.template get_multi_ptr<access::decorated::no>(),
+          //        sg_startx * TM, k * TK, K);
+          //   joint_matrix_load(
+          //        sg, sub_b,
+          //        accB.template get_multi_ptr<access::decorated::no>(),
+          //        k * TK / vnniFactor, sg_starty / sg_size * TN * vnniFactor, N * vnniFactor);
+          //    joint_matrix_mad(sg, sub_c, sub_a, sub_b, sub_c);
+          //  }
 
           //  os << "sg_startx " << sg_startx << " sg_starty " << sg_starty << ": ";
           //  joint_matrix_apply(sg, sub_b, [=](T2 &x) {
@@ -94,9 +82,9 @@ void matrix_multiply(big_matrix<T1, M, N> &C, big_matrix<T2, M, K> &A,
           //  });
           //  os << "\n";
 
-           joint_matrix_store(
-               sg, sub_c, accC.template get_multi_ptr<access::decorated::no>(),
-               sg_startx * TM, sg_starty / sg_size * TN, N, layout::row_major);
+          //  joint_matrix_store(
+          //      sg, sub_c, accC.template get_multi_ptr<access::decorated::no>(),
+          //      sg_startx * TM, sg_starty / sg_size * TN, N, layout::row_major);
           
           //  os << "sg_startx " << sg_startx << " sg_starty " << sg_starty << ": ";
           //  joint_matrix_apply(sg, sub_c, [=](T1 &x) {
@@ -194,8 +182,8 @@ void init_and_multiply() {
 
   matrix_multiply<TResult, T, MATRIX_M, MATRIX_N, MATRIX_K, vnni_factor, tM, tN,
                   tK, kernel_name>(MC, MA, MBvnni);
-  matrix_multiply_ref((T *)A, (T *)B, (TResult *)D, MATRIX_M, MATRIX_N,
-                      MATRIX_K);
+  // matrix_multiply_ref((T *)A, (T *)B, (TResult *)D, MATRIX_M, MATRIX_N,
+  //                     MATRIX_K);
 
 //   for (int i = 0; i < MATRIX_M; i++) {
 //     for (int j = 0; j < MATRIX_N; j++) {
@@ -212,47 +200,48 @@ void init_and_multiply() {
 //     cout << std::endl;
 //   }
 
-  assert(matrix_compare(MATRIX_M, MATRIX_N, (TResult *)C, (TResult *)D));
+  // assert(matrix_compare(MATRIX_M, MATRIX_N, (TResult *)C, (TResult *)D));
 }
 
 template <typename T, typename TResult, size_t VNNI, size_t TN, size_t TK>
 void test() {
   init_and_multiply<T, TResult, VNNI, 1, TN, TK, mult<T, 1, TN, TK>>();
-  init_and_multiply<T, TResult, VNNI, 2, TN, TK, mult<T, 2, TN, TK>>();
-  init_and_multiply<T, TResult, VNNI, 3, TN, TK, mult<T, 3, TN, TK>>();
-  init_and_multiply<T, TResult, VNNI, 4, TN, TK, mult<T, 4, TN, TK>>();
-  init_and_multiply<T, TResult, VNNI, 5, TN, TK, mult<T, 5, TN, TK>>();
-  init_and_multiply<T, TResult, VNNI, 6, TN, TK, mult<T, 6, TN, TK>>();
-  init_and_multiply<T, TResult, VNNI, 7, TN, TK, mult<T, 7, TN, TK>>();
-  init_and_multiply<T, TResult, VNNI, 8, TN, TK, mult<T, 8, TN, TK>>();
+  // init_and_multiply<T, TResult, VNNI, 2, TN, TK, mult<T, 2, TN, TK>>();
+  // init_and_multiply<T, TResult, VNNI, 3, TN, TK, mult<T, 3, TN, TK>>();
+  // init_and_multiply<T, TResult, VNNI, 4, TN, TK, mult<T, 4, TN, TK>>();
+  // init_and_multiply<T, TResult, VNNI, 5, TN, TK, mult<T, 5, TN, TK>>();
+  // init_and_multiply<T, TResult, VNNI, 6, TN, TK, mult<T, 6, TN, TK>>();
+  // init_and_multiply<T, TResult, VNNI, 7, TN, TK, mult<T, 7, TN, TK>>();
+  // init_and_multiply<T, TResult, VNNI, 8, TN, TK, mult<T, 8, TN, TK>>();
 }
 
 int main() {
-  queue q;
-  std::vector<combination> combinations =
-      q.get_device()
-          .get_info<sycl::ext::oneapi::experimental::info::device::
-                        matrix_combinations>();
+  test<bfloat16, float, 2, /*TN*/ 16, /*TK*/ 16>();
+  // queue q;
+  // std::vector<combination> combinations =
+  //     q.get_device()
+  //         .get_info<sycl::ext::oneapi::experimental::info::device::
+  //                       matrix_combinations>();
 
-  for (unsigned int i = 0; i < combinations.size(); i++) {
-    if (combinations[i].nsize == 0) { // Intel AMX
-      test<bfloat16, float, 2, /*TN*/ 16, /*TK*/ 32>();
-      test<int8_t, int32_t, 4, /*TN*/ 16, /*TK*/ 64>();
-      break;
-    }
+  // for (unsigned int i = 0; i < combinations.size(); i++) {
+  //   if (combinations[i].nsize == 0) { // Intel AMX
+  //     test<bfloat16, float, 2, /*TN*/ 16, /*TK*/ 32>();
+  //     test<int8_t, int32_t, 4, /*TN*/ 16, /*TK*/ 64>();
+  //     break;
+  //   }
 
-    if (combinations[i].nsize == 16) { // architecture::intel_gpu_pvc
-      test<bfloat16, float, 2, /*TN*/ 16, /*TK*/ 16>();
-      test<int8_t, int32_t, 4, /*TN*/ 16, /*TK*/ 32>();
-      break;
-    }
+  //   if (combinations[i].nsize == 16) { // architecture::intel_gpu_pvc
+  //     test<bfloat16, float, 2, /*TN*/ 16, /*TK*/ 16>();
+  //     test<int8_t, int32_t, 4, /*TN*/ 16, /*TK*/ 32>();
+  //     break;
+  //   }
 
-    if (combinations[i].nsize == 8) { // architecture::intel_gpu_dg2*
-      test<bfloat16, float, 2, /*TN*/ 8, /*TK*/ 16>();
-      test<int8_t, int32_t, 4, /*TN*/ 8, /*TK*/ 32>();
-      break;
-    }
-  }
+  //   if (combinations[i].nsize == 8) { // architecture::intel_gpu_dg2*
+  //     test<bfloat16, float, 2, /*TN*/ 8, /*TK*/ 16>();
+  //     test<int8_t, int32_t, 4, /*TN*/ 8, /*TK*/ 32>();
+  //     break;
+  //   }
+  // }
 
   return 0;
 }

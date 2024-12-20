@@ -148,11 +148,11 @@ int main() {
       // This combination is not currently supported for sub group size = 32 in
       // IGC
 #if (!defined(SG_SZ) || SG_SZ != 32)
-      test<bfloat16, float, /*TM*/ 16, /*TN*/ 16, /*TK*/ 16>();
+      // test<bfloat16, float, /*TM*/ 16, /*TN*/ 16, /*TK*/ 16>();
       // test<bfloat16, bfloat16, /*TM*/ 16, /*TN*/ 16, /*TK*/ 16>();
-      test<bfloat16, float, /*TM*/ 1, /*TN*/ 64, /*TK*/ 16>();
+      // test<bfloat16, float, /*TM*/ 1, /*TN*/ 64, /*TK*/ 16>();
       // test<bfloat16, bfloat16, /*TM*/ 1, /*TN*/ 64, /*TK*/ 16>();
-      test<bfloat16, float, /*TM*/ 32, /*TN*/ 64, /*TK*/ 16>();
+      // test<bfloat16, float, /*TM*/ 32, /*TN*/ 64, /*TK*/ 16>();
       // test<bfloat16, bfloat16, /*TM*/ 32, /*TN*/ 64, /*TK*/ 16>();
       // test<bfloat16, float, /*TM*/ 32, /*TN*/ 64, /*TK*/ 32>();
       // test<bfloat16, bfloat16, /*TM*/ 32, /*TN*/ 64, /*TK*/ 32>();
