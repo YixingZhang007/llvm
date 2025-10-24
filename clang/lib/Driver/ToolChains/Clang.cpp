@@ -5292,6 +5292,7 @@ void Clang::ConstructJob(Compilation &C, const JobAction &JA,
                     C.isOffloadingHostKind(Action::OFK_Cuda))) ||
       (JA.isHostOffloading(Action::OFK_SYCL) &&
        C.getDriver().GetUseNewOffloadDriverForSYCLOffload(C, Args));
+  llvm::errs() << "[Clang.cpp] BuildCompilation IsHostOffloadingAction: " << IsHostOffloadingAction << "\n";
 
   bool IsRDCMode =
       Args.hasFlag(options::OPT_fgpu_rdc, options::OPT_fno_gpu_rdc, IsSYCL);

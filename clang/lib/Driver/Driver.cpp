@@ -1574,7 +1574,7 @@ bool Driver::GetUseNewOffloadDriverForSYCLOffload(Compilation &C,
 
   if (const Arg *A = Args.getLastArg(options::OPT_fsycl_targets_EQ)) {
     for (const char *Val : A->getValues()) {
-      llvm::Triple TT(C.getDriver().MakeSYCLDeviceTriple(Val));
+      llvm::Triple TT(C.getDriver().getSYCLDeviceTriple(Val));
       if ((!TT.isSPIROrSPIRV()) || TT.isSPIRAOT())
         return false;
     }
@@ -2216,8 +2216,12 @@ Compilation *Driver::BuildCompilation(ArrayRef<const char *> ArgList) {
   if (C->isOffloadingHostKind(Action::OFK_OpenMP) ||
       TranslatedArgs->hasFlag(options::OPT_offload_new_driver,
                               options::OPT_no_offload_new_driver, false) ||
-      GetUseNewOffloadDriverForSYCLOffload(*C, *TranslatedArgs))
+      GetUseNewOffloadDriverForSYCLOffload(*C, *TranslatedArgs)) {
     setUseNewOffloadingDriver();
+    llvm::errs() << "[Driver.cpp] BuildCompilation running setUseNewOffloadingDriver" << GetUseNewOffloadDriverForSYCLOffload(*C, *TranslatedArgs) << "\n";
+  } else {
+    llvm::errs() << "[Driver.cpp] BuildCompilation NOT running setUseNewOffloadingDriver" << GetUseNewOffloadDriverForSYCLOffload(*C, *TranslatedArgs) << "\n";
+  }
 
   // Construct the list of abstract actions to perform for this compilation. On
   // MachO targets this uses the driver-driver and universal actions.
@@ -7108,6 +7112,7 @@ void Driver::BuildDefaultActions(Compilation &C, DerivedArgList &Args,
                    options::OPT_no_offload_new_driver,
                    C.isOffloadingHostKind(Action::OFK_Cuda)) ||
       GetUseNewOffloadDriverForSYCLOffload(C, Args);
+  llvm::errs() << "[Driver.cpp] BuildDefaultActions UseNewOffloadingDriver: " << UseNewOffloadingDriver << "\n";
 
   bool HIPNoRDC =
       C.isOffloadingHostKind(Action::OFK_HIP) &&

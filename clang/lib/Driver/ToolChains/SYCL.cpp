@@ -1822,8 +1822,10 @@ void SYCLToolChain::AddImpliedTargetArgs(const llvm::Triple &Triple,
   // string
   llvm::SmallVector<std::pair<StringRef, StringRef>, 16> PerDeviceArgs;
   bool IsGen = Triple.getSubArch() == llvm::Triple::SPIRSubArch_gen;
+  llvm::errs() << "[SYCL] AddImpliedTargetArgs: IsGen: " << IsGen << "\n";
   bool IsJIT =
       Triple.isSPIROrSPIRV() && Triple.getSubArch() == llvm::Triple::NoSubArch;
+   llvm::errs() << "[SYCL] AddImpliedTargetArgs: IsJIT: " << IsJIT << "\n";
   if (IsGen && Args.hasArg(options::OPT_fsycl_fp64_conv_emu))
     BeArgs.push_back("-ze-fp64-gen-conv-emu");
   if (Arg *A = Args.getLastArg(options::OPT_g_Group, options::OPT__SLASH_Z7))
@@ -1893,9 +1895,9 @@ void SYCLToolChain::AddImpliedTargetArgs(const llvm::Triple &Triple,
       if (!DevArg.empty())
         DeviceName = DevArg;
       StringRef BackendOptName = SYCL::gen::getGenGRFFlag("auto");
+      llvm::errs() << "[SYCL] AddImpliedTargetArgs: BackendOptName added : " << BackendOptName << "\n";
       if (IsGen)
-        PerDeviceArgs.push_back({Args.MakeArgString(DeviceName),
-                                 Args.MakeArgString(BackendOptName)});
+        PerDeviceArgs.push_back({DeviceName, Args.MakeArgString(BackendOptName)});
       else if (IsJIT)
         BeArgs.push_back(Args.MakeArgString(RegAllocModeOptName + DeviceName +
                                             ":" + BackendOptName));
@@ -1958,7 +1960,10 @@ void SYCLToolChain::AddImpliedTargetArgs(const llvm::Triple &Triple,
   }
   if (IsGen) {
     for (auto [DeviceName, BackendArgStr] : PerDeviceArgs) {
+      llvm::errs() << "[SYCL] Device: " << DeviceName << ", Backend: " << BackendArgStr << "\n";
       CmdArgs.push_back("-device_options");
+      // CmdArgs.push_back("pvc");
+      // CmdArgs.push_back("-ze-intel-enable-auto-large-GRF-mode");
       CmdArgs.push_back(Args.MakeArgString(DeviceName));
       CmdArgs.push_back(Args.MakeArgString(BackendArgStr));
     }
