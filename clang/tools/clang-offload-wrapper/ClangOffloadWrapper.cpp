@@ -2096,6 +2096,7 @@ int main(int argc, const char **argv) {
       break;
     case 4: // CompileOptions
       CompileOpts = *(ArgSeq.template get<4>());
+      llvm::errs() << "[offload wrapper] CompileOptions: " << CompileOpts << "\n";
       break;
     case 5: // LinkOptions
       LinkOpts = *(ArgSeq.template get<5>());

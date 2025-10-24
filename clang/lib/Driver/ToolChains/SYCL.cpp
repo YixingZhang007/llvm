@@ -1962,10 +1962,10 @@ void SYCLToolChain::AddImpliedTargetArgs(const llvm::Triple &Triple,
     for (auto [DeviceName, BackendArgStr] : PerDeviceArgs) {
       llvm::errs() << "[SYCL] Device: " << DeviceName << ", Backend: " << BackendArgStr << "\n";
       CmdArgs.push_back("-device_options");
-      // CmdArgs.push_back("pvc");
-      // CmdArgs.push_back("-ze-intel-enable-auto-large-GRF-mode");
-      CmdArgs.push_back(Args.MakeArgString(DeviceName));
-      CmdArgs.push_back(Args.MakeArgString(BackendArgStr));
+      CmdArgs.push_back("pvc");
+      CmdArgs.push_back("-ze-intel-enable-auto-large-GRF-mode");
+      // CmdArgs.push_back(Args.MakeArgString(DeviceName));
+      // CmdArgs.push_back(Args.MakeArgString(BackendArgStr));
     }
   }
   if (BeArgs.empty())
