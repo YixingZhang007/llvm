@@ -957,10 +957,8 @@ static void addBackendOptions(const ArgList &Args,
     llvm::errs() << "[ClangLinkerWrapper]   BeforeOptions: " << BeforeOptions << "\n";
     llvm::errs() << "[ClangLinkerWrapper]   AfterOptions: " << AfterOptions << "\n";
     // Only add if not empty, an empty arg can lead to ocloc errors.
+    //Another solution 
     if (!BeforeOptions.empty()){
-      // CmdArgs.push_back(BeforeOptions);
-
-      //This is the fix 
       SmallVector<StringRef, 8> BeforeArgs;  // Create a vector to hold results
       BeforeOptions.split(BeforeArgs, " ", /*MaxSplit=*/-1, /*KeepEmpty=*/false);
         
@@ -968,14 +966,29 @@ static void addBackendOptions(const ArgList &Args,
         CmdArgs.push_back(string);
       }
     }
+
+  //Another solution that works
+  // if (!AfterOptions.empty()) {
+  //     SmallVector<StringRef, 8> AfterArgs;
+  //     AfterOptions.split(AfterArgs, " ", /*MaxSplit=*/-1, /*KeepEmpty=*/false);
+  //     for (auto string : AfterArgs) {
+  //       CmdArgs.push_back("-options");
+  //       CmdArgs.push_back(string);
+  //     }
+  // }
+
     if (!AfterOptions.empty()) {
-      // Separator not included by the split function, so explicitly added here.
       CmdArgs.push_back("-options");
-      std::string Replace = AfterOptions.str();
-      std::replace(Replace.begin(), Replace.end(), ' ', ',');
-      CmdArgs.push_back(Args.MakeArgString(Replace));
+      
+      SmallVector<StringRef, 8> AfterArgs;
+      AfterOptions.split(AfterArgs, " ", /*MaxSplit=*/-1, /*KeepEmpty=*/false);
+      
+      // Don't add quotes - let executeCommands handle it
+      std::string JoinedOptions = llvm::join(AfterArgs, " ");
+      CmdArgs.push_back(Args.MakeArgString(JoinedOptions));
     }
   }
+
   StringRef OptL =
       Args.getLastArgValue(OPT_sycl_backend_link_options_from_image_EQ);
   llvm::errs() << "[ClangLinkerWrapper]   OptL: " << OptL << "\n";
