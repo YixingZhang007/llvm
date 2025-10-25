@@ -86,45 +86,45 @@ static StringRef expandResponseFileImageArguments(StringRef Arg,
 
 // Get a map containing all the arguments for the image. Repeated arguments will
 // be placed in a comma separated list.
-// static DenseMap<StringRef, StringRef> getImageArguments(StringRef Image,
-//                                                         StringSaver &Saver) {
-//   DenseMap<StringRef, StringRef> Args;
-//   for (StringRef Arg : llvm::split(Image, ",")) {
-//     llvm::errs() << "[offsetpackager] Processing image argument: " << Arg << "\n";
-//     auto [Key, Value] = Arg.split("=");
-//     if (Key == "file" && Value[0] == '@')
-//       Value = expandResponseFileImageArguments(Value, Saver);
-//     auto [It, Inserted] = Args.try_emplace(Key, Value);
-//     if (!Inserted)
-//       It->second = Saver.save(It->second + "," + Value);
-//   }
-
-//   return Args;
-// }
-
-// Modified getImageArguments with hardcoded compile-opts value
 static DenseMap<StringRef, StringRef> getImageArguments(StringRef Image,
                                                         StringSaver &Saver) {
   DenseMap<StringRef, StringRef> Args;
   for (StringRef Arg : llvm::split(Image, ",")) {
     llvm::errs() << "[offsetpackager] Processing image argument: " << Arg << "\n";
     auto [Key, Value] = Arg.split("=");
-
     if (Key == "file" && Value[0] == '@')
       Value = expandResponseFileImageArguments(Value, Saver);
-
-    if (Key == "compile-opts") {
-      // Hardcode the value for compile-opts
-      llvm::errs() << "[offsetpackager] Hardcoding compile-opts value\n";
-      Args.try_emplace(Key, "-device_options pvc, -ze-intel-enable-auto-large-GRF-mode, -options -ze-fp64-gen-conv-emu");
-    } else {
-      auto [It, Inserted] = Args.try_emplace(Key, Value);
-      if (!Inserted)
-        It->second = Saver.save(It->second + "," + Value);
-    }
+    auto [It, Inserted] = Args.try_emplace(Key, Value);
+    if (!Inserted)
+      It->second = Saver.save(It->second + "," + Value);
   }
+
   return Args;
 }
+
+// Modified getImageArguments with hardcoded compile-opts value
+// static DenseMap<StringRef, StringRef> getImageArguments(StringRef Image,
+//                                                         StringSaver &Saver) {
+//   DenseMap<StringRef, StringRef> Args;
+//   for (StringRef Arg : llvm::split(Image, ",")) {
+//     llvm::errs() << "[offsetpackager] Processing image argument: " << Arg << "\n";
+//     auto [Key, Value] = Arg.split("=");
+
+//     if (Key == "file" && Value[0] == '@')
+//       Value = expandResponseFileImageArguments(Value, Saver);
+
+//     if (Key == "compile-opts") {
+//       // Hardcode the value for compile-opts
+//       llvm::errs() << "[offsetpackager] Hardcoding compile-opts value\n";
+//       Args.try_emplace(Key, "-device_options pvc, -ze-intel-enable-auto-large-GRF-mode, -options -ze-fp64-gen-conv-emu");
+//     } else {
+//       auto [It, Inserted] = Args.try_emplace(Key, Value);
+//       if (!Inserted)
+//         It->second = Saver.save(It->second + "," + Value);
+//     }
+//   }
+//   return Args;
+// }
 
 static Error writeFile(StringRef Filename, StringRef Data) {
   Expected<std::unique_ptr<FileOutputBuffer>> OutputOrErr =
