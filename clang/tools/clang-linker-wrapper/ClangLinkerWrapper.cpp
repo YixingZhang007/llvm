@@ -957,7 +957,7 @@ static void addBackendOptions(const ArgList &Args,
     llvm::errs() << "[ClangLinkerWrapper]   BeforeOptions: " << BeforeOptions << "\n";
     llvm::errs() << "[ClangLinkerWrapper]   AfterOptions: " << AfterOptions << "\n";
     // Only add if not empty, an empty arg can lead to ocloc errors.
-    //Another solution 
+    // solution that works
     if (!BeforeOptions.empty()){
       SmallVector<StringRef, 8> BeforeArgs;  // Create a vector to hold results
       BeforeOptions.split(BeforeArgs, " ", /*MaxSplit=*/-1, /*KeepEmpty=*/false);
