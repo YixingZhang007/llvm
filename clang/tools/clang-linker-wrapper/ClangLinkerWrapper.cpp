@@ -957,8 +957,17 @@ static void addBackendOptions(const ArgList &Args,
     llvm::errs() << "[ClangLinkerWrapper]   BeforeOptions: " << BeforeOptions << "\n";
     llvm::errs() << "[ClangLinkerWrapper]   AfterOptions: " << AfterOptions << "\n";
     // Only add if not empty, an empty arg can lead to ocloc errors.
-    if (!BeforeOptions.empty())
-      CmdArgs.push_back(BeforeOptions);
+    if (!BeforeOptions.empty()){
+      // CmdArgs.push_back(BeforeOptions);
+
+      //This is the fix 
+      SmallVector<StringRef, 8> BeforeArgs;  // Create a vector to hold results
+      BeforeOptions.split(BeforeArgs, " ", /*MaxSplit=*/-1, /*KeepEmpty=*/false);
+        
+      for (auto string : BeforeArgs) {
+        CmdArgs.push_back(string);
+      }
+    }
     if (!AfterOptions.empty()) {
       // Separator not included by the split function, so explicitly added here.
       CmdArgs.push_back("-options");
@@ -972,12 +981,15 @@ static void addBackendOptions(const ArgList &Args,
   llvm::errs() << "[ClangLinkerWrapper]   OptL: " << OptL << "\n";
   OptL.split(CmdArgs, " ", /*MaxSplit=*/-1, /*KeepEmpty=*/false);
   llvm::errs() << "[ClangLinkerWrapper]   OptL2 : " << OptL << "\n";
-  llvm::errs() << "[ClangLinkerWrapper]   CmdArgs : " << CmdArgs << "\n";
   StringRef OptTool = (IsCPU) ? Args.getLastArgValue(OPT_cpu_tool_arg_EQ)
                               : Args.getLastArgValue(OPT_gpu_tool_arg_EQ);
   llvm::errs() << "[ClangLinkerWrapper]   OptTool: " << OptTool << "\n";
   OptTool.split(CmdArgs, " ", /*MaxSplit=*/-1, /*KeepEmpty=*/false);
-  llvm::errs() << "[ClangLinkerWrapper]   CmdArgs : " << CmdArgs << "\n";
+  llvm::errs() << "[ClangLinkerWrapper]   CmdArgs : ";
+  for (const auto& arg : CmdArgs) {
+    llvm::errs() << arg << " ";
+  }
+  llvm::errs() << "\n";
   return;
 }
 
