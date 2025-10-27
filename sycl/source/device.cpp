@@ -214,7 +214,11 @@ backend device::get_backend() const noexcept { return impl->getBackend(); }
 
 ur_native_handle_t device::getNative() const { return impl->getNative(); }
 
-bool device::has(aspect Aspect) const { return impl->has(Aspect); }
+bool device::has(aspect Aspect) const { 
+  std::cerr << "[device.cpp] Checking if device has aspect: " << static_cast<int>(Aspect) << std::endl;
+  std::cerr << "[device.cpp] Device has aspect: " << (impl->has(Aspect) ? "Yes" : "No") << std::endl;
+  return impl->has(Aspect); 
+}
 
 void device::ext_oneapi_enable_peer_access(const device &peer) {
   ur_device_handle_t Device = impl->getHandleRef();

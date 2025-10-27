@@ -20,14 +20,21 @@
 // UNSUPPORTED: cuda, hip
 // UNSUPPORTED-INTENDED: FP64 emulation is an Intel specific feature.
 
-// RUN: %clangxx -fsycl -fsycl-targets=intel_gpu_dg2_g10,intel_gpu_dg2_g11,intel_gpu_dg2_g12,intel_gpu_pvc,intel_gpu_mtl_h,intel_gpu_mtl_u -fsycl-fp64-conv-emu %O0 %s -o %t.out
+// RUN: %clangxx -fsycl -fsycl-targets=intel_gpu_dg2_g10,intel_gpu_dg2_g11,intel_gpu_dg2_g12,intel_gpu_pvc,intel_gpu_mtl_h,intel_gpu_mtl_u -fsycl-fp64-conv-emu --no-offload-new-driver %O0 %s -o %t.out
 // RUN: %{run} %t.out
+
+// RUN: %clangxx -fsycl -fsycl-targets=intel_gpu_dg2_g10,intel_gpu_dg2_g11,intel_gpu_dg2_g12,intel_gpu_pvc,intel_gpu_mtl_h,intel_gpu_mtl_u -fsycl-fp64-conv-emu --offload-new-driver %O0 %s -o %t.out
+// RUN: %{run} %t.out
+
 
 #include <sycl/detail/core.hpp>
 using namespace sycl;
 
 template <typename T> struct Increment {
-  T operator()(T x) const { return x + 1; }
+  T operator()(T x) const {
+    // return 1;
+     return x + 1; 
+    }
 };
 
 template <typename T> struct IntCastThenIncrement {
@@ -61,9 +68,13 @@ int main() {
   nfail += test<Increment<long>>(q);
   nfail += test<Increment<float>>(q);
 
-  if (q.get_device().has(aspect::fp64))
-    nfail += test<Increment<double>>(q);
-
+  // This test is currently disabled because it requires the -ze-fp64-gen-emu IGC option to run FP64 arithmetic operations.
+  // TODO: Implement support for a new flag, -fsycl-fp64-gen-emu, which will enable the use of the -ze-fp64-gen-emu IGC option.
+  // if (q.get_device().has(aspect::fp64)) {
+  //   nfail += test<Increment<double>>(q);
+  // }
+  
+  nfail += test<Increment<double>>(q);
   nfail += test<IntCastThenIncrement<double>>(q);
 
   if (nfail == 0)
